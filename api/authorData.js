@@ -1,10 +1,10 @@
-// import client from '../utils/client';
+import client from '../utils/client';
 
-const endpoint = 'https://almost-2c5eb-default-rtdb.firebaseio.com/';
+const endpoint = client.databaseURL;
 
 // FIXME:  GET ALL AUTHORS
-const getAuthors = () => new Promise((resolve, reject) => {
-  fetch(`${endpoint}/authors.json`, {
+const getAuthors = (uid) => new Promise((resolve, reject) => {
+  fetch(`${endpoint}/authors.json?orderBy="uid"&equalTo="${uid}"`, {
     method: 'GET',
     headers: {
       'Content-Type': 'applications/json',
@@ -21,15 +21,18 @@ const getAuthors = () => new Promise((resolve, reject) => {
     .catch(reject);
 });
 
-const getFavAuthors = () => new Promise((resolve, reject) => {
-  fetch(`${endpoint}/authors.json?orderBy="favorite"&equalTo=true`, {
+const getFavAuthors = (uid) => new Promise((resolve, reject) => {
+  fetch(`${endpoint}/authors.json?orderBy="uid"&equalTo="${uid}"`, {
     method: 'GET',
     header: {
       'Content-Type': 'applications/json',
     },
   })
     .then((response) => response.json())
-    .then((data) => resolve(Object.values(data)))
+    .then((data) => {
+      const favAuth = Object.values(data).filter((item) => item.favorite);
+      resolve(favAuth);
+    })
     .catch(reject);
 });
 

@@ -1,11 +1,11 @@
-// import client from '../utils/client';
+import client from '../utils/client';
 // API CALLS FOR BOOKS
 
-const endpoint = 'https://almost-2c5eb-default-rtdb.firebaseio.com/';
+const endpoint = client.databaseURL;
 
 // TODO: GET BOOKS
-const getBooks = () => new Promise((resolve, reject) => {
-  fetch(`${endpoint}/books.json`, {
+const getBooks = (uid) => new Promise((resolve, reject) => {
+  fetch(`${endpoint}/books.json?orderBy="uid"&equalTo="${uid}"`, {
     method: 'GET',
     headers: {
       'Content-Type': 'applications/json',
@@ -77,15 +77,18 @@ const updateBook = (payload) => new Promise((resolve, reject) => {
 });
 
 // TODO: FILTER BOOKS ON SALE
-const booksOnSale = () => new Promise((resolve, reject) => {
-  fetch(`${endpoint}/books.json?orderBy="sale"&equalTo=true`, {
+const booksOnSale = (uid) => new Promise((resolve, reject) => {
+  fetch(`${endpoint}/books.json?orderBy="uid"&equalTo="${uid}"`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
     },
   })
     .then((response) => response.json())
-    .then((data) => resolve(Object.values(data)))
+    .then((data) => {
+      const onSale = Object.values(data).filter((item) => item.sale);
+      resolve(onSale);
+    })
     .catch(reject);
 });
 
